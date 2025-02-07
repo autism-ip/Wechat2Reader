@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Wechat2Reader
+# Licensed under the MIT License - see LICENSE file for details
+
 from flask import Flask, render_template, request, jsonify
 import wechat_to_reader
 import wechat_to_readwise

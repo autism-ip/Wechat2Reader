@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Wechat2Reader
+# Licensed under the MIT License - see LICENSE file for details
+
 import requests
 from bs4 import BeautifulSoup
 import time
