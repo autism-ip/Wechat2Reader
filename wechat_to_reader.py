@@ -274,7 +274,7 @@ def get_api_key():
         else:
             raise Exception("配置文件模板 config.template.ini 不存在")
     
-    config.read(config_file)
+    config.read(config_file, encoding='utf-8')
     try:
         api_key = config['Readwise']['api_key']
         if api_key == 'YOUR_API_KEY':

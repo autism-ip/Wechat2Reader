@@ -16,7 +16,7 @@ def get_api_key():
     config = configparser.ConfigParser()
     config_file = Path(__file__).parent / 'config.ini'
     
-    config.read(config_file)
+    config.read(config_file, encoding='utf-8')
     return config['Readwise']['api_key']
 
 def download_image(img_url):
