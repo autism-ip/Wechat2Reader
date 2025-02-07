@@ -4,6 +4,8 @@
 
 # Wechat2Reader
 
+中文 | [English](README_EN.md)
+
 将微信公众号文章导入到 Reader 或 Readwise。
 
 ## 功能特点
