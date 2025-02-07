@@ -286,10 +286,10 @@ def get_api_key():
     except KeyError:
         raise Exception("配置文件格式错误，请确保包含 [Readwise] 部分和 api_key 设置")
 
-# 主程序
-def main():
+def process_article(url):
+    """处理单个文章"""
     try:
-        # 检查是否安装了 Chrome
+        # 检查 Chrome 是否安装
         if sys.platform == 'win32':
             chrome_path = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
             if not os.path.exists(chrome_path):
@@ -300,26 +300,25 @@ def main():
         # 获取 API key
         api_key = get_api_key()
         
-        # 询问用户输入公众号文章链接
-        url = input("请输入微信公众号文章链接：")
-        if not url.startswith("https://mp.weixin.qq.com/"):
-            raise Exception("请输入有效的微信公众号文章链接")
-        
-        # 解析文章内容
-        print("正在获取文章内容...")
+        # 处理文章
         article_content = parse_wechat_article(url)
-        print(f"成功获取文章：{article_content['title']}")
-        
-        # 保存到 Reader
         save_to_reader(article_content, api_key)
+        return True
         
     except Exception as e:
         print(f"发生错误：{str(e)}")
-        if "chromedriver" in str(e).lower() or "chrome" in str(e).lower():
-            print("\n故障排除建议：")
-            print("1. 确保已安装 Google Chrome 浏览器")
-            print("2. 尝试重新运行程序")
-            print("3. 如果问题持续，可以尝试手动下载 ChromeDriver")
+        raise
+
+# 主程序
+def main():
+    try:
+        url = input("请输入微信公众号文章链接：")
+        process_article(url)
+        
+    except KeyboardInterrupt:
+        print("\n程序已终止")
+    except Exception as e:
+        print(f"发生错误：{str(e)}")
         sys.exit(1)
 
 if __name__ == "__main__":

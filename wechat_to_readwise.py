@@ -237,6 +237,16 @@ def save_to_readwise(article_data):
         print(f"Error saving to Readwise: {e}")
         return None
 
+def process_article(url):
+    """处理单个文章"""
+    try:
+        article_data = process_wechat_article(url)
+        save_to_readwise(article_data)
+        return True
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        raise
+
 def main():
     print("Welcome to WeChat Article to Readwise Converter!")
     while True:
@@ -269,4 +279,5 @@ def main():
             print("\nFailed to process the article. Please check the URL and try again.")
 
 if __name__ == "__main__":
-    main()
+    url = input("请输入微信公众号文章链接：")
+    process_article(url)
