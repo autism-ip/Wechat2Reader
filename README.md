@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/logo.png" alt="Wechat2Reader Logo" width="200">
+</p>
+
 # Wechat2Reader
 
 将微信公众号文章导入到 Reader 或 Readwise。
