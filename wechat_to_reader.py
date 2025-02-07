@@ -12,6 +12,9 @@ import os
 import sys
 import subprocess
 import re
+import json
+import configparser
+from pathlib import Path
 
 # 禁用 SSL 警告
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -253,6 +256,36 @@ def save_to_reader(article_content, api_key):
             print(f"请求数据格式错误：{e.response.text}")
         raise
 
+# 函数：从配置文件获取 Readwise API key
+def get_api_key():
+    """从配置文件获取 Readwise API key"""
+    config = configparser.ConfigParser()
+    config_file = Path(__file__).parent / 'config.ini'
+    template_file = Path(__file__).parent / 'config.template.ini'
+    
+    if not config_file.exists():
+        if template_file.exists():
+            raise Exception(
+                "未找到配置文件。请按以下步骤设置：\n"
+                "1. 复制 config.template.ini 为 config.ini\n"
+                "2. 访问 https://readwise.io/access_token 获取你的 API key\n"
+                "3. 在 config.ini 中填入你的 API key"
+            )
+        else:
+            raise Exception("配置文件模板 config.template.ini 不存在")
+    
+    config.read(config_file)
+    try:
+        api_key = config['Readwise']['api_key']
+        if api_key == 'YOUR_API_KEY':
+            raise Exception(
+                "请在 config.ini 中设置有效的 Readwise API Key\n"
+                "访问 https://readwise.io/access_token 获取你的 API key"
+            )
+        return api_key
+    except KeyError:
+        raise Exception("配置文件格式错误，请确保包含 [Readwise] 部分和 api_key 设置")
+
 # 主程序
 def main():
     try:
@@ -265,13 +298,7 @@ def main():
                     raise Exception("未找到 Google Chrome，请先安装 Chrome 浏览器")
         
         # 获取 API key
-        api_key = os.getenv('READWISE_API_KEY')
-        if not api_key:
-            raise Exception(
-                "未找到 Readwise API Key。请按以下步骤设置：\n"
-                "1. 访问 https://readwise.io/access_token 获取你的 API key\n"
-                "2. 在终端中运行：$env:READWISE_API_KEY = '你的API_KEY'"
-            )
+        api_key = get_api_key()
         
         # 询问用户输入公众号文章链接
         url = input("请输入微信公众号文章链接：")

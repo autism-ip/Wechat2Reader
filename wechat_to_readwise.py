@@ -5,11 +5,19 @@ import os
 import re
 from urllib.parse import urljoin
 import base64
+import configparser
+from pathlib import Path
 
-# Readwise API token
-READWISE_TOKEN = "Wrf05JcF7c96ytZuiusyuIsUXlcRtd09tlVCNSyqaeHes42gD4"
+# Readwise API URL
 READWISE_API_URL = "https://readwise.io/api/v2/highlights/"
-MAX_CHUNK_SIZE = 6000  # Maximum size for each chunk
+
+def get_api_key():
+    """从配置文件获取 Readwise API key"""
+    config = configparser.ConfigParser()
+    config_file = Path(__file__).parent / 'config.ini'
+    
+    config.read(config_file)
+    return config['Readwise']['api_key']
 
 def download_image(img_url):
     """Download image and convert to base64"""
@@ -169,7 +177,7 @@ def process_wechat_article(url):
         # Split content into chunks
         content_str = str(content)
         print(f"Total content length: {len(content_str)}")
-        content_chunks = split_content(content_str, MAX_CHUNK_SIZE)
+        content_chunks = split_content(content_str, 6000)
         print(f"Split into {len(content_chunks)} chunks")
         
         return {
@@ -184,9 +192,10 @@ def process_wechat_article(url):
 
 def save_to_readwise(article_data):
     """Save processed article to Readwise using REST API"""
+    api_key = get_api_key()
     try:
         headers = {
-            'Authorization': f'Token {READWISE_TOKEN}',
+            'Authorization': f'Token {api_key}',
             'Content-Type': 'application/json'
         }
         
