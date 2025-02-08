@@ -47,7 +47,7 @@ pip install -r requirements.txt
      ```
      3. 下载对应版本的 ChromeDriver（将命令中的 VERSION 替换为上一步获取的版本号）：
      ```powershell
-     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/win64/chromedriver-win64.zip" -o chromedriver\chromedriver.zip
+     Invoke-WebRequest -Uri "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/win64/chromedriver-win64.zip" -OutFile "chromedriver\chromedriver.zip"
      ```
      4. 解压并移动文件：
      ```powershell

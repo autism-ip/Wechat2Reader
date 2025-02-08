@@ -47,7 +47,7 @@ pip install -r requirements.txt
      ```
      3. Download matching ChromeDriver (replace VERSION with the version from step 2):
      ```powershell
-     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/win64/chromedriver-win64.zip" -o chromedriver\chromedriver.zip
+     Invoke-WebRequest -Uri "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/win64/chromedriver-win64.zip" -OutFile "chromedriver\chromedriver.zip"
      ```
      4. Extract and move files:
      ```powershell
