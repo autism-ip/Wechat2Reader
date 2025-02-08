@@ -60,7 +60,7 @@ pip install -r requirements.txt
      ```bash
      /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version | awk '{print $3}'
      ```
-     3. Download matching ChromeDriver:
+     3. Download matching ChromeDriver(replace VERSION with the version from step 2):
      ```bash
      curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/mac-x64/chromedriver-mac-x64.zip" -o chromedriver/chromedriver.zip
      ```
@@ -80,7 +80,7 @@ pip install -r requirements.txt
      ```bash
      google-chrome --version | awk '{print $3}'
      ```
-     3. Download matching ChromeDriver:
+     3. Download matching ChromeDriver(replace VERSION with the version from step 2):
      ```bash
      curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/linux64/chromedriver-linux64.zip" -o chromedriver/chromedriver.zip
      ```
