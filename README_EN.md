@@ -60,6 +60,8 @@ python app.py
    - Select target platform (Reader or Readwise)
    - Paste the WeChat article URL
    - Click "Start Import"
+   
+3. After the import is complete, delete the example article used for testing.
 
 ## Troubleshooting
 

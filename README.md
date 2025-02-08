@@ -6,7 +6,7 @@
 
 中文 | [English](README_EN.md)
 
-将微信公众号文章导入到 Reader 或 Readwise。
+将微信公众号文章导入到 Reader 或 Readwise
 
 ## 功能特点
 - 📱 支持微信公众号文章
@@ -60,6 +60,8 @@ python app.py
    - 选择目标平台（Reader 或 Readwise）
    - 粘贴微信公众号文章链接
    - 点击"开始导入"
+
+3. 导入完成后，删除测试所用的 example 文章
 
 ## 常见问题
 
