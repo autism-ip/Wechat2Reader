@@ -9,7 +9,7 @@
 Import WeChat articles to Reader or Readwise.
 
 <p align="center">
-  <img src="images/page.png" alt="Wechat2Reader Web Interface" width="600">
+  <img src="images/page.png" alt="Wechat2Reader Web Interface" width="800">
 </p>
 
 ## Features
