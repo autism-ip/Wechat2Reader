@@ -104,7 +104,9 @@ python app.py
 ```
 
 2. 在网页界面上：
-   - 选择目标平台（Reader 或 Readwise）
+   - 选择目标平台
+      - Reader（一般来说都是Reader）
+      - Readwise
    - 粘贴微信公众号文章链接
    - 点击"开始导入"
 

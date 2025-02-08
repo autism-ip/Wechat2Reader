@@ -104,7 +104,9 @@ python app.py
 ```
 
 2. In the web interface:
-   - Select target platform (Reader or Readwise)
+   - Select target platform
+      - Reader（It's usually Reader）
+      - Readwise
    - Paste the WeChat article URL
    - Click "Start Import"
    
