@@ -3,35 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>公众号文章导入Reader</title>
+    <title>Wechat2Reader - 公众号文章导入工具</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #00CC7A;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="container mx-auto max-w-2xl p-6">
-        <h1 class="text-4xl font-bold text-center mb-10">公众号文章导入Reader</h1>
-        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-            <div class="mb-4">
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto max-w-2xl p-6 animate-fadeIn">
+        <div class="text-center mb-8">
+            <img src="logo.png" alt="Wechat2Reader Logo" class="mx-auto w-24 h-24 mb-4">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Wechat2Reader</h1>
+            <p class="text-gray-600">将微信公众号文章导入到你喜欢的阅读平台</p>
+        </div>
+        <div class="bg-white shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4 transition-all duration-300 hover:shadow-xl">
+            <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="destination">
                     选择导入目标
                 </label>
-                <select id="destination" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <select id="destination" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
                     <option value="reader">Reader</option>
                     <option value="readwise">Readwise</option>
                 </select>
             </div>
-            <div class="mb-4">
+            <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="url">
                     文章URL
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="url" type="url" placeholder="粘贴文章URL">
+                <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200" 
+                       id="url" 
+                       type="url" 
+                       placeholder="粘贴微信公众号文章链接">
             </div>
             <div class="flex items-center justify-between">
-                <button id="importButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full" type="button">
+                <button id="importButton" 
+                        class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 transform hover:scale-105">
                     开始导入
                 </button>
             </div>
-            <div id="status" class="mt-4 text-center font-medium"></div>
+            <div id="status" class="mt-6 text-center font-medium rounded-lg py-3 hidden"></div>
+        </div>
+        <div class="text-center text-gray-600 text-sm">
+            <p>遇到问题？查看 <a href="https://github.com/Penn-Lam/Wechat2Reader" class="text-blue-500 hover:text-blue-700 underline">使用说明</a></p>
         </div>
     </div>
     <script>
@@ -39,30 +72,54 @@
             var url = document.getElementById('url').value;
             var destination = document.getElementById('destination').value;
             var statusDiv = document.getElementById('status');
+            var importButton = document.getElementById('importButton');
 
             if (!url) {
-                statusDiv.textContent = "请输入有效的URL";
-                statusDiv.className = "mt-4 text-center font-medium text-red-500";
+                showStatus("请输入有效的URL", "error");
                 return;
             }
 
-            statusDiv.textContent = "正在导入...";
-            statusDiv.className = "mt-4 text-center font-medium text-blue-500";
+            // 显示加载状态
+            importButton.disabled = true;
+            importButton.innerHTML = '<span class="loading mr-2"></span>正在导入...';
+            showStatus("正在导入...", "loading");
 
             axios.post('/process', {
                 url: url,
                 target: destination
             })
             .then(function (response) {
-                statusDiv.textContent = response.data.message;
-                statusDiv.className = "mt-4 text-center font-medium text-green-500";
+                showStatus(response.data.message, "success");
             })
             .catch(function (error) {
-                statusDiv.textContent = error.response?.data?.error || "导入失败，请重试";
-                statusDiv.className = "mt-4 text-center font-medium text-red-500";
+                showStatus(error.response?.data?.error || "导入失败，请重试", "error");
                 console.error('Error:', error);
+            })
+            .finally(function() {
+                importButton.disabled = false;
+                importButton.innerHTML = '开始导入';
             });
         });
+
+        function showStatus(message, type) {
+            var statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = "mt-6 text-center font-medium rounded-lg py-3";
+            
+            switch(type) {
+                case 'error':
+                    statusDiv.classList.add('bg-red-100', 'text-red-700');
+                    break;
+                case 'success':
+                    statusDiv.classList.add('bg-green-100', 'text-green-700');
+                    break;
+                case 'loading':
+                    statusDiv.classList.add('bg-blue-100', 'text-blue-700');
+                    break;
+            }
+            
+            statusDiv.classList.remove('hidden');
+        }
     </script>
 </body>
 </html>

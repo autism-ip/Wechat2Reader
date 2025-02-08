@@ -6,7 +6,7 @@ import wechat_to_reader
 import wechat_to_readwise
 import traceback
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='images')
 
 @app.route('/')
 def index():
