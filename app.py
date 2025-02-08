@@ -24,10 +24,10 @@ def process():
             
         if target == 'reader':
             result = wechat_to_reader.process_article(url)
-            return jsonify({'message': '成功导入到Reader！'})
+            return jsonify({'message': '成功导入到Reader！', 'link': 'https://read.readwise.io/new'})
         elif target == 'readwise':
             result = wechat_to_readwise.process_article(url)
-            return jsonify({'message': '成功导出入Readwise！'})
+            return jsonify({'message': '成功导出入Readwise！', 'link': 'https://read.readwise.io/new'})
         else:
             return jsonify({'error': '不支持的目标平台'}), 400
             

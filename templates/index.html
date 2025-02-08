@@ -19,7 +19,7 @@
             width: 20px;
             height: 20px;
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #00CC7A;
+            border-top: 3px solid #3498db;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -41,7 +41,7 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="destination">
                     选择导入目标
                 </label>
-                <select id="destination" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                <select id="destination" class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#7DDEB1] focus:border-[#7DDEB1] transition-all duration-200">
                     <option value="reader">Reader</option>
                     <option value="readwise">Readwise</option>
                 </select>
@@ -50,14 +50,14 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="url">
                     文章URL
                 </label>
-                <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200" 
+                <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-[#7DDEB1] focus:border-[#7DDEB1] transition-all duration-200" 
                        id="url" 
                        type="url" 
                        placeholder="粘贴微信公众号文章链接">
             </div>
             <div class="flex items-center justify-between">
                 <button id="importButton" 
-                        class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-200 transform hover:scale-105">
+                        class="w-full bg-[#00CC7A] hover:bg-[#00b36b] text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7DDEB1] focus:ring-opacity-50 transition-all duration-200 transform hover:scale-105">
                     开始导入
                 </button>
             </div>
@@ -90,6 +90,12 @@
             })
             .then(function (response) {
                 showStatus(response.data.message, "success");
+                if (response.data.link) {
+                    var linkDiv = document.createElement('div');
+                    linkDiv.className = "mt-4 text-center";
+                    linkDiv.innerHTML = `<a href="${response.data.link}" target="_blank" class="text-[#00CC7A] hover:text-[#00b36b] underline">点击查看导入的文章</a>`;
+                    document.getElementById('status').appendChild(linkDiv);
+                }
             })
             .catch(function (error) {
                 showStatus(error.response?.data?.error || "导入失败，请重试", "error");
