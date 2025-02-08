@@ -6,7 +6,11 @@
 
 中文 | [English](README_EN.md)
 
-将微信公众号文章导入到 Reader 或 Readwise
+将微信公众号文章导入到 Reader 或 Readwise。
+
+<p align="center">
+  <img src="images/page.png" alt="Wechat2Reader Web Interface" width="600">
+</p>
 
 ## 功能特点
 - 📱 支持微信公众号文章

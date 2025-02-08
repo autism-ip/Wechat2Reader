@@ -8,6 +8,10 @@
 
 Import WeChat articles to Reader or Readwise.
 
+<p align="center">
+  <img src="images/page.png" alt="Wechat2Reader Web Interface" width="600">
+</p>
+
 ## Features
 - 📱 Support for WeChat Official Account articles
 - 🔄 Import to Reader or Readwise
