@@ -22,7 +22,7 @@
 
 1. 克隆仓库：
 ```bash
-git clone https://github.com/yourusername/Wechat2Reader.git
+git clone https://github.com/Penn-Lam/Wechat2Reader.git
 cd Wechat2Reader
 ```
 
@@ -32,17 +32,64 @@ pip install -r requirements.txt
 ```
 
 3. 安装 ChromeDriver：
-   - 方法一：使用命令行安装（推荐）
-   ```bash
-   python -m webdriver_manager.chrome
-   ```
-   - 方法二：让程序自动安装
-     - 首次运行时会自动下载对应版本的 ChromeDriver
-   - 方法三：手动下载（如果上述方法都失败）
-     1. 查看你的 Chrome 浏览器版本（设置 -> 关于 Chrome）
-     2. 访问 https://chromedriver.chromium.org/downloads
-     3. 下载对应版本的 ChromeDriver
-     4. 将 chromedriver.exe（Windows）或 chromedriver（Mac/Linux）放在项目根目录
+   - Windows:
+     1. 创建 chromedriver 文件夹：
+     ```powershell
+     mkdir chromedriver
+     ```
+     2. 获取 Chrome 版本号：
+     ```powershell
+     (Get-Item (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe').'(Default)').VersionInfo.FileVersion
+     ```
+     3. 下载对应版本的 ChromeDriver（将命令中的 VERSION 替换为上一步获取的版本号）：
+     ```powershell
+     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/win64/chromedriver-win64.zip" -o chromedriver\chromedriver.zip
+     ```
+     4. 解压并移动文件：
+     ```powershell
+     Expand-Archive -Path "chromedriver\chromedriver.zip" -DestinationPath "chromedriver" -Force
+     Move-Item -Path "chromedriver\chromedriver-win64\chromedriver.exe" -Destination "chromedriver\chromedriver.exe" -Force
+     ```
+
+   - macOS:
+     1. 创建 chromedriver 文件夹：
+     ```bash
+     mkdir chromedriver
+     ```
+     2. 获取 Chrome 版本号：
+     ```bash
+     /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version | awk '{print $3}'
+     ```
+     3. 下载对应版本的 ChromeDriver：
+     ```bash
+     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/mac-x64/chromedriver-mac-x64.zip" -o chromedriver/chromedriver.zip
+     ```
+     4. 解压并移动文件：
+     ```bash
+     unzip chromedriver/chromedriver.zip -d chromedriver/
+     mv chromedriver/chromedriver-mac-x64/chromedriver chromedriver/
+     chmod +x chromedriver/chromedriver
+     ```
+
+   - Linux:
+     1. 创建 chromedriver 文件夹：
+     ```bash
+     mkdir chromedriver
+     ```
+     2. 获取 Chrome 版本号：
+     ```bash
+     google-chrome --version | awk '{print $3}'
+     ```
+     3. 下载对应版本的 ChromeDriver：
+     ```bash
+     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/linux64/chromedriver-linux64.zip" -o chromedriver/chromedriver.zip
+     ```
+     4. 解压并移动文件：
+     ```bash
+     unzip chromedriver/chromedriver.zip -d chromedriver/
+     mv chromedriver/chromedriver-linux64/chromedriver chromedriver/
+     chmod +x chromedriver/chromedriver
+     ```
 
 4. 配置 API 密钥：
    - 复制 `config.template.ini` 为 `config.ini`
@@ -70,10 +117,9 @@ python app.py
 
 2. **ChromeDriver 问题**
    - 如果看到 ChromeDriver 相关错误，请尝试：
-     1. 使用命令行安装：`python -m webdriver_manager.chrome`
-     2. 确保 Chrome 浏览器为最新版本
-     3. 如果在中国大陆使用，可能需要科学上网
-     4. 如果以上方法都不行，再尝试手动下载安装
+     1. 确保 Chrome 浏览器为最新版本
+     2. 如果在中国大陆使用，可能需要科学上网
+     3. 如果以上方法都不行，再尝试手动下载安装
 
 3. **API 密钥错误**
    - 确保已正确配置 `config.ini`
@@ -81,7 +127,7 @@ python app.py
 
 4. **文章无法导入**
    - 确保文章链接来自微信公众号
-   - 确保文章可以正常访问
+   - 确保文章可以正常访问（非付费文章）
 
 ## 贡献指南
 

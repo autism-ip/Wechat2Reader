@@ -22,7 +22,7 @@ Import WeChat articles to Reader or Readwise.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Wechat2Reader.git
+git clone https://github.com/Penn-Lam/Wechat2Reader.git
 cd Wechat2Reader
 ```
 
@@ -32,17 +32,64 @@ pip install -r requirements.txt
 ```
 
 3. Install ChromeDriver:
-   - Method 1: Using command line (Recommended)
-   ```bash
-   python -m webdriver_manager.chrome
-   ```
-   - Method 2: Automatic installation
-     - Will download the appropriate ChromeDriver version on first run
-   - Method 3: Manual download (if above methods fail)
-     1. Check your Chrome browser version (Settings -> About Chrome)
-     2. Visit https://chromedriver.chromium.org/downloads
-     3. Download the matching ChromeDriver version
-     4. Place chromedriver.exe (Windows) or chromedriver (Mac/Linux) in the project root
+   - Windows:
+     1. Create chromedriver folder:
+     ```powershell
+     mkdir chromedriver
+     ```
+     2. Get Chrome version:
+     ```powershell
+     (Get-Item (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe').'(Default)').VersionInfo.FileVersion
+     ```
+     3. Download matching ChromeDriver (replace VERSION with the version from step 2):
+     ```powershell
+     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/win64/chromedriver-win64.zip" -o chromedriver\chromedriver.zip
+     ```
+     4. Extract and move files:
+     ```powershell
+     Expand-Archive -Path "chromedriver\chromedriver.zip" -DestinationPath "chromedriver" -Force
+     Move-Item -Path "chromedriver\chromedriver-win64\chromedriver.exe" -Destination "chromedriver\chromedriver.exe" -Force
+     ```
+
+   - macOS:
+     1. Create chromedriver folder:
+     ```bash
+     mkdir chromedriver
+     ```
+     2. Get Chrome version:
+     ```bash
+     /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version | awk '{print $3}'
+     ```
+     3. Download matching ChromeDriver:
+     ```bash
+     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/mac-x64/chromedriver-mac-x64.zip" -o chromedriver/chromedriver.zip
+     ```
+     4. Extract and move files:
+     ```bash
+     unzip chromedriver/chromedriver.zip -d chromedriver/
+     mv chromedriver/chromedriver-mac-x64/chromedriver chromedriver/
+     chmod +x chromedriver/chromedriver
+     ```
+
+   - Linux:
+     1. Create chromedriver folder:
+     ```bash
+     mkdir chromedriver
+     ```
+     2. Get Chrome version:
+     ```bash
+     google-chrome --version | awk '{print $3}'
+     ```
+     3. Download matching ChromeDriver:
+     ```bash
+     curl -L "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/VERSION/linux64/chromedriver-linux64.zip" -o chromedriver/chromedriver.zip
+     ```
+     4. Extract and move files:
+     ```bash
+     unzip chromedriver/chromedriver.zip -d chromedriver/
+     mv chromedriver/chromedriver-linux64/chromedriver chromedriver/
+     chmod +x chromedriver/chromedriver
+     ```
 
 4. Configure API key:
    - Copy `config.template.ini` to `config.ini`
@@ -70,10 +117,9 @@ python app.py
 
 2. **ChromeDriver issues**
    - If you encounter ChromeDriver errors, try:
-     1. Install via command line: `python -m webdriver_manager.chrome`
-     2. Ensure Chrome browser is up to date
-     3. If in mainland China, you might need a VPN
-     4. If all else fails, try manual installation
+     1. Ensure Chrome browser is up to date
+     2. If in mainland China, you might need a VPN
+     3. If all else fails, try manual installation
 
 3. **API key errors**
    - Ensure `config.ini` is properly configured
@@ -81,7 +127,7 @@ python app.py
 
 4. **Article import fails**
    - Ensure the URL is from a WeChat Official Account
-   - Verify the article is accessible
+   - Verify the article is accessible (Non-paid articles)
 
 ## Contributing
 
