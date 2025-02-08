@@ -190,6 +190,28 @@ def parse_wechat_article(url):
             raise Exception("无法找到文章标题")
         title = title.get_text().strip()
         
+        # 提取作者
+        author = None
+        author_elem = soup.find('a', {'class': 'wx_tap_link js_wx_tap_highlight weui-wa-hotarea'})
+        if author_elem:
+            author = author_elem.get_text().strip()
+        else:
+            # 尝试其他可能的作者元素
+            possible_author_selectors = [
+                'span[data-author]',
+                'a#js_name',
+                'div#js_profile_qrcode > div > strong',
+                'div#meta_content > span:first-child'
+            ]
+            for selector in possible_author_selectors:
+                author_elem = soup.select_one(selector)
+                if author_elem:
+                    author = author_elem.get_text().strip()
+                    break
+        
+        if not author:
+            author = "微信公众号"  # 默认作者
+        
         content_elem = soup.find('div', {'class': 'rich_media_content'})
         if not content_elem:
             raise Exception("无法找到文章内容")
@@ -198,19 +220,71 @@ def parse_wechat_article(url):
         content_html = str(content_elem)
         content = content_elem.get_text().strip()
         
-        # 提取图片
+        # 提取封面图片
+        cover_image = None
+        try:
+            # 查找所有可能包含封面图片的script标签
+            scripts = driver.find_elements(By.TAG_NAME, "script")
+            for script in scripts:
+                script_text = script.get_attribute('innerHTML')
+                if not script_text:
+                    continue
+                
+                # 尝试不同的变量名
+                for var_name in ['msg_cdn_url', 'cdn_url', 'msg_link', 'cdn_url_235']:
+                    if f'var {var_name} = "' in script_text:
+                        cover_image = script_text.split(f'var {var_name} = "')[1].split('"')[0]
+                        if cover_image.startswith('//'):
+                            cover_image = 'https:' + cover_image
+                        break
+                if cover_image:
+                    break
+                    
+            if not cover_image:
+                # 如果还是没找到，尝试从页面中查找其他可能的封面图片元素
+                possible_cover_selectors = [
+                    "meta[property='og:image']",
+                    "img#js_cover",
+                    "img.rich_media_thumb_thumb",
+                    "img.rich_media_thumb"
+                ]
+                for selector in possible_cover_selectors:
+                    try:
+                        cover_elem = driver.find_element(By.CSS_SELECTOR, selector)
+                        if selector.startswith("meta"):
+                            cover_image = cover_elem.get_attribute('content')
+                        else:
+                            cover_image = cover_elem.get_attribute('data-src') or cover_elem.get_attribute('src')
+                        if cover_image:
+                            if cover_image.startswith('//'):
+                                cover_image = 'https:' + cover_image
+                            break
+                    except:
+                        continue
+        except Exception as e:
+            print(f"提取封面图片时出错：{str(e)}")
+        
+        if cover_image:
+            print(f"找到封面图片：{cover_image}")
+        
+        # 提取文章中的图片
         images = []
-        img_elements = soup.find_all('img', {'data-src': True})
+        img_elements = content_elem.find_all('img', {'data-src': True})
         for img in img_elements:
             if 'data-src' in img.attrs:
-                images.append(img['data-src'])
+                img_url = img['data-src']
+                if img_url.startswith('//'):
+                    img_url = 'https:' + img_url
+                images.append(img_url)
         
         return {
             'title': title,
             'content': content,
             'html': content_html,
             'images': images,
-            'url': url
+            'cover_image': cover_image,
+            'url': url,
+            'author': author
         }
     except Exception as e:
         print(f"解析文章时出错：{str(e)}")
@@ -236,23 +310,71 @@ def save_to_reader(article_content, api_key):
         'Authorization': f"Token {api_key}",
         'Content-Type': 'application/json'
     }
+    
+    # 准备图片列表，处理图片URL
+    images = []
+    cover_image = None
+    
+    # 微信图片请求的headers（不包含 Referer）
+    wx_img_headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
+    }
+    
+    session = requests.Session()
+    session.headers.update(wx_img_headers)
+    
+    # 处理封面图片
+    if article_content.get('cover_image'):
+        cover_url = article_content['cover_image']
+        if cover_url.startswith('//'):
+            cover_url = 'https:' + cover_url
+        if 'mmbiz.qpic.cn' in cover_url:
+            try:
+                img_response = session.get(cover_url, verify=False)
+                if img_response.status_code == 200:
+                    cover_image = cover_url
+            except:
+                print(f"无法获取封面图片：{cover_url}")
+        else:
+            cover_image = cover_url
+    
+    # 处理文章中的图片
+    for img_url in article_content['images']:
+        if img_url.startswith('//'):
+            img_url = 'https:' + img_url
+        if 'mmbiz.qpic.cn' in img_url:
+            try:
+                img_response = session.get(img_url, verify=False)
+                if img_response.status_code == 200:
+                    images.append(img_url)
+            except:
+                print(f"无法获取图片：{img_url}")
+        else:
+            images.append(img_url)
+    
+    # 准备发送到 Reader 的数据
     data = {
-        'url': article_content['url'],  # 必需字段
-        'title': article_content['title'],
-        'text': article_content['content'],  # 使用text而不是content
-        'html': article_content.get('html', ''),
+        'url': article_content['url'],
+        'html': article_content['html'],
         'should_clean_html': True,
-        'tags': ['wechat'],
-        'images': article_content['images']
+        'title': article_content['title'],
+        'author': article_content['author'],
+        'image_url': cover_image,  # 封面图片
+        'location': 'new',  # 新文章
+        'category': 'article',  # 文章类型
+        'saved_using': 'Wechat2Reader',  # 保存来源
+        'tags': ['wechat']  # 标签列表
     }
     
     try:
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()
-        print("文章已成功保存到 Reader！")
-        print(f"标题：{article_content['title']}")
-        print(f"内容长度：{len(article_content['content'])} 字符")
-        print(f"图片数量：{len(article_content['images'])}")
+        print("成功保存到 Reader！")
+        result = response.json()
+        print(f"阅读链接：{result.get('url', '')}")
+        return result
     except requests.exceptions.RequestException as e:
         print(f"保存到 Reader 失败：{str(e)}")
         if hasattr(e, 'response') and e.response is not None:
